@@ -4,51 +4,17 @@
 #include <vector>
 
 using namespace std;
-class Mapa
-{
-	private:
-		int numVertices;
-		vector<vector<int>> adjacencyList;
 
-	public:
-		Mapa(int vertices) 
-		{
-			numVertices = vertices;
-			adjacencyList.resize(vertices);
-		}
-
-		void addEdge(int origen, int destino) 
-		{
-			adjacencyList[origen].push_back(destino);
-			adjacencyList[destino].push_back(origen);
-		}
-
-		void printGraph() {
-			for (int i = 0; i < numVertices; i++) {
-				cout << "Vertex " << i << ": ";
-				for (int j = 0; j < adjacencyList[i].size(); j++) {
-					cout << adjacencyList[i][j] << " ";
-				}
-				cout << endl;
-			}
-		}
-};
-
-struct Guardian
+struct Guardian  // Estructura que contiene las características de cada guardian
 {
 	string name;
 	int powerLevel;
 	string mainMaster;
 	string village;
-	vector<Guardian> aprendices;
+	vector<Guardian> aprendices;  // Si el personaje es un maestro, significa que tiene aprendices, los cuales se guardarán aquí
 };
 
-void dados()
-{
-	int random = 1 + (rand() % 6);
-	cout << random << endl;
-}
-vector<Guardian> comprobarMaestros(vector<Guardian> lista)
+vector<Guardian> comprobarMaestros(vector<Guardian> lista)  
 {
 	vector<Guardian> ListaFinal = lista;
 
@@ -56,45 +22,28 @@ vector<Guardian> comprobarMaestros(vector<Guardian> lista)
 	{
 		for (int j = 0; j < lista.size(); j++)
 		{
-			if (lista[i].name == lista[j].mainMaster)
+			if (lista[i].name == lista[j].mainMaster) // Con esta función se verifica si un nombre de un guardian esta como maestro de otro, lo cual significa que es un maestro 
 			{
-				ListaFinal[i].aprendices.push_back(ListaFinal[j]);
+				ListaFinal[i].aprendices.push_back(ListaFinal[j]);  // Aquí se añade el aprendiz al vector de aprendices del guardian maestro
 			}
 		}
 	}
 
-	return ListaFinal;
-}
-void comprobarConexiones()
-{
-	ifstream archivo;
-	archivo.open("Mapa.txt");
-	if (archivo.is_open())
-	{
-		string linea;
-		while (getline(archivo, linea))
-		{
-		}
-	}
-	else
-	{
-		cout << "Error al abrir el archivo\n";
-		exit(EXIT_FAILURE);
-	}
-	archivo.close();
+	return ListaFinal;  // Se retorna el vector
 }
 
 int main()
 {
+	Guardian arbol;
 	string nombre;
 	int poder;
 	string maestro;
 	string aldea;
 	ifstream fich;
 	Guardian miPersonaje;
-	fich.open("Aprendices.txt");
 	vector<Guardian> readGuardianVector;
 	vector<string> ciudades;
+	bool guardSelect = false;
 	int eleccion2;
 	ciudades.push_back("Capital City");
 	ciudades.push_back("Tesla");
@@ -108,7 +57,9 @@ int main()
 	ciudades.push_back("Cliff Village");
 	ciudades.push_back("Island Village");
 	ciudades.push_back("Storm Village");
-	if (fich.is_open())
+
+	fich.open("Aprendices.txt");  // Se abre el archivo con este nombre y que se encuentra en la carpeta del programa
+	if (fich.is_open())  // Si el archivo se abrió correctamente, entonces se realiza todo esto
 	{
 		Guardian data;
 		while (fich >> nombre >> poder >> maestro)
@@ -121,16 +72,16 @@ int main()
 			readGuardianVector.push_back(data);
 		}
 	}
-	else
+	else  // Esto ocurre cuando el archivo no se pudo abrir, ya sea porque tiene otro nombre u otra ubicacion
 	{
 		cout << "Error al abrir el archivo\n";
 		exit(EXIT_FAILURE);
 	}
-	fich.close();
+	fich.close();  // Una vez hecho todo, se cierra el archivo
 
-	readGuardianVector = comprobarMaestros(readGuardianVector);
+	readGuardianVector = comprobarMaestros(readGuardianVector);  // readGuardianVector contiene a todos los guardianes con sus respectivos discipulos, si es que tiene alguno
 
-	/*for (const Guardian& data : readGuardianVector)
+	/*for (const Guardian& data : readGuardianVector)  // Utilicé estos for para comprobar si se guardaron correctamente los guardianes y las ciudades
 	{
 		cout << "Nombre: " << data.name << endl;
 		cout << "Poder: " << data.powerLevel << endl;
@@ -153,7 +104,7 @@ int main()
 	int guardSelected=0;
 	srand((unsigned)time(NULL));
 
-	while (ciclo = 1)
+	while (ciclo == 1)
 	{
 		system("cls");
 		cout << "/////////Bienvenido/////////" << endl;
@@ -165,7 +116,7 @@ int main()
 
 		cin >> eleccion;
 
-		switch (eleccion)
+		switch (eleccion)  // Dependiendo de la eleccion del jugador, se comienza con una funcion u otra
 		{
 		case 1:
 			// Inicia el juego
@@ -177,11 +128,14 @@ int main()
 			cin >> nombre;
 			for (int i = 0; i < ciudades.size(); i++)
 			{
-				cout << i+1 << ". " << ciudades[i] << endl;
+				if (ciudades[i] != "Tesla")
+				{
+					cout << i + 1 << ". " << ciudades[i] << endl;  // Se imprimen las ciudades menos Tesla
+				}
 			}
 			cout << "Seleccione una aldea en donde comenzar ingresando el numero correspondiente: ";
 			cin >> eleccion2;
-			switch (eleccion2)
+			switch (eleccion2)  // Se asignan el nombre y la aldea al personaje del usuario, su nivel de poder se vuelve 50 y no tiene maestro
 			{
 			case 1:
 				miPersonaje.name = nombre;
@@ -189,13 +143,11 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 2:
-				miPersonaje.name = nombre;
-				miPersonaje.village = ciudades[1];
-				miPersonaje.powerLevel = 50;
-				miPersonaje.mainMaster = "NONE";
-				readGuardianVector.push_back(miPersonaje);
+				cout << "El numero ingresado no corresponde con ninguna aldea..." << endl;
+				system("pause");
 				break;
 			case 3:
 				miPersonaje.name = nombre;
@@ -203,6 +155,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 4:
 				miPersonaje.name = nombre;
@@ -210,6 +163,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 5:
 				miPersonaje.name = nombre;
@@ -217,6 +171,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 6:
 				miPersonaje.name = nombre;
@@ -224,6 +179,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 7:
 				miPersonaje.name = nombre;
@@ -231,6 +187,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 8:
 				miPersonaje.name = nombre;
@@ -238,6 +195,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 9:
 				miPersonaje.name = nombre;
@@ -245,6 +203,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 10:
 				miPersonaje.name = nombre;
@@ -252,6 +211,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 11:
 				miPersonaje.name = nombre;
@@ -259,6 +219,7 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			case 12:
 				miPersonaje.name = nombre;
@@ -266,24 +227,16 @@ int main()
 				miPersonaje.powerLevel = 50;
 				miPersonaje.mainMaster = "NONE";
 				readGuardianVector.push_back(miPersonaje);
+				guardSelect = true;
 				break;
 			}
-			system("cls");
-			cout << "Su personaje es el siguiente: " << endl;
-			cout << "Nombre: " << readGuardianVector[readGuardianVector.size()-1].name << endl;
-			cout << "Poder: " << readGuardianVector[readGuardianVector.size()-1].powerLevel << endl;
-			cout << "Maestro: " << readGuardianVector[readGuardianVector.size()-1].mainMaster << endl;
-			cout << "Aldea: " << readGuardianVector[readGuardianVector.size()-1].village << endl << endl;
-			cout << "Presione una tecla para continuar...";
-			getchar();
-			getchar();
 			break;
 		case 3:
 			// Elegir un personaje
 			system("cls");
 			for (int i = 0; i < readGuardianVector.size(); i++)
 			{
-				if (readGuardianVector[i].aprendices.size() == 0)
+				if (readGuardianVector[i].aprendices.size() == 0)  // Se imprimen aquellos guardianes que no sean maestros, es decir, que no tengan aprendices dentro de su respectivo vector
 				{
 					cout << i + 1 << ". " << endl;
 					cout << "Nombre: " << readGuardianVector[i].name << endl;
@@ -298,13 +251,12 @@ int main()
 			cin >> guardSelected;
 			if (readGuardianVector[guardSelected - 1].aprendices.size() > 0)
 			{
-				cout << "El numero que ingreso no existe como numero de guardian disponible, intentelo nuevamente...";
-				getchar();
-				getchar();
+				cout << "El numero que ingreso no existe como numero de guardian disponible..."<< endl;
+				system("pause");
 			}
 			else
 			{
-				miPersonaje = readGuardianVector[guardSelected - 1];
+				miPersonaje = readGuardianVector[guardSelected - 1];  // El personaje del usuario copia los atributos del guardian seleccionado y luego este ultimo se borra de la lista
 				miPersonaje.powerLevel = 50;
 				readGuardianVector.erase(readGuardianVector.begin() + (guardSelected - 1));
 				system("cls");
@@ -314,27 +266,30 @@ int main()
 				cout << "Poder: " << miPersonaje.powerLevel << endl;
 				cout << "Maestro: " << miPersonaje.mainMaster << endl;
 				cout << "Aldea: " << miPersonaje.village << endl << endl;
-				cout << "Presione una tecla para continuar...";
-				getchar();
-				getchar();
-				
+				guardSelect = true;
+				system("pause");
 			}
 			break;
 		case 4:
 			// Imprimir mi personaje
 			system("cls");
-			cout << "Su guardian es:" << endl;
-			cout << "Nombre: " << miPersonaje.name << endl;
-			cout << "Poder: " << miPersonaje.powerLevel << endl;
-			cout << "Maestro: " << miPersonaje.mainMaster << endl;
-			cout << "Aldea: " << miPersonaje.village << endl << endl;
-			cout << "Presione una tecla para continuar...";
-			getchar();
-			getchar();
+			if (guardSelect == true)
+			{
+				cout << "Su guardian es:" << endl;
+				cout << "Nombre: " << miPersonaje.name << endl;  // Se imprime el personaje seleccionado
+				cout << "Poder: " << miPersonaje.powerLevel << endl;
+				cout << "Maestro: " << miPersonaje.mainMaster << endl;
+				cout << "Aldea: " << miPersonaje.village << endl << endl;
+			}
+			else
+			{
+				cout << "Aun no ha elegido un personaje..." << endl;  // Si no se ha elegido o creado un personaje, aparece este mensaje
+			}
+			system("pause");
 			break;
 		case 5:
 			// Salir
-			exit(1);
+			exit(1);  // Se termina la ejecucion del programa
 			break;
 		}
 	}
